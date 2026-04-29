@@ -52,6 +52,11 @@
 (defvar ellama-transient-provider nil)
 (defvar ellama--current-session-uid)
 
+(declare-function ellama-ask-image "ellama"
+                  (image prompt &optional create-session &rest args))
+(declare-function ellama-chat-with-image "ellama"
+                  (image prompt &optional create-session &rest args))
+
 (defun ellama-transient-system-show ()
   "Show transient system message."
   (format "System message (%s)"
@@ -584,6 +589,15 @@ FORMAT is used for non-default VALUE."
    (transient-arg-value "--new-session" args)
    :ephemeral (transient-arg-value "--ephemeral" args)))
 
+(transient-define-suffix ellama-transient-ask-image (&optional args)
+  "Ask about an image.  ARGS used for transient arguments."
+  (interactive (list (transient-args transient-current-command)))
+  (ellama-ask-image
+   (read-file-name "Image: " nil nil t)
+   (read-string "Ask Ellama: ")
+   (transient-arg-value "--new-session" args)
+   :ephemeral (transient-arg-value "--ephemeral" args)))
+
 ;;;###autoload (autoload 'ellama-transient-ask-menu "ellama-transient" nil t)
 (transient-define-prefix ellama-transient-ask-menu ()
   "Ask Commands."
@@ -596,7 +610,8 @@ FORMAT is used for non-default VALUE."
   [["Ask Commands"
     ("l" "Ask Line" ellama-transient-ask-line)
     ("s" "Ask Selection" ellama-transient-ask-selection)
-    ("a" "Ask About" ellama-transient-ask-about)]
+    ("a" "Ask About" ellama-transient-ask-about)
+    ("i" "Ask Image" ellama-transient-ask-image)]
    ["Quit" ("q" "Quit" transient-quit-one)]])
 
 ;;;###autoload (autoload 'ellama-transient-translate-menu "ellama-transient" nil t)
@@ -635,6 +650,14 @@ ARGS used for transient arguments."
   (interactive (list (transient-args transient-current-command)))
   (ellama-context-add-file (transient-arg-value "--ephemeral" args)))
 
+(transient-define-suffix ellama-transient-add-image (&optional args)
+  "Add image to context.
+ARGS used for transient arguments."
+  (interactive (list (transient-args transient-current-command)))
+  (ellama-context-add-image
+   (when (transient-arg-value "--ephemeral" args)
+     'ephemeral)))
+
 (transient-define-suffix ellama-transient-add-selection (&optional args)
   "Add current selection to context.
 ARGS used for transient arguments."
@@ -666,6 +689,7 @@ ARGS used for transient arguments."
     ("b" "Add Buffer" ellama-transient-add-buffer)
     ("d" "Add Directory" ellama-transient-add-directory)
     ("f" "Add File" ellama-transient-add-file)
+    ("I" "Add Image" ellama-transient-add-image)
     ("s" "Add Selection" ellama-transient-add-selection)
     ("i" "Add Info Node" ellama-transient-add-info-node)]
    ["Manage"
@@ -734,6 +758,15 @@ ARGS used for transient arguments."
    (transient-arg-value "--new-session" args)
    :ephemeral (transient-arg-value "--ephemeral" args)))
 
+(transient-define-suffix ellama-transient-chat-with-image (&optional args)
+  "Chat with Ellama about an image.  ARGS used for transient arguments."
+  (interactive (list (transient-args transient-current-command)))
+  (ellama-chat-with-image
+   (read-file-name "Image: " nil nil t)
+   (read-string "Ask Ellama: ")
+   (transient-arg-value "--new-session" args)
+   :ephemeral (transient-arg-value "--ephemeral" args)))
+
 ;;;###autoload (autoload 'ellama-transient-main-menu "ellama-transient" nil t)
 (transient-define-prefix ellama-transient-main-menu ()
   "Main Menu."
@@ -745,6 +778,7 @@ ARGS used for transient arguments."
    ("-e" "Create Ephemeral Session" "--ephemeral")]
   ["Main"
    [("c" "Chat" ellama-transient-chat)
+    ("i" "Chat with image" ellama-transient-chat-with-image)
     ("b" "Chat with blueprint" ellama-blueprint-select)
     ("B" "Blueprint Commands" ellama-transient-blueprint-menu)
     ("T" "Tools Commands" ellama-transient-tools-menu)]
