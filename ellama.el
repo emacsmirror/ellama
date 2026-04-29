@@ -6,7 +6,7 @@
 ;; URL: http://github.com/s-kostyaev/ellama
 ;; Keywords: help local tools
 ;; Package-Requires: ((emacs "28.1") (llm "0.24.0") (plz "0.8") (transient "0.7") (compat "29.1") (yaml "1.2.3"))
-;; Version: 1.16.3
+;; Version: 1.17.0
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Created: 8th Oct 2023
 
@@ -70,6 +70,12 @@
 (defcustom ellama-provider nil
   "Backend LLM provider."
   :type '(sexp :validate llm-standard-provider-p))
+
+(defcustom ellama-max-tokens nil
+  "Maximum number of tokens to generate.
+When nil, use the provider default."
+  :type '(choice (const :tag "Use provider default" nil)
+                 (integer :tag "Maximum tokens")))
 
 (defcustom ellama-session-remove-reasoning t
   "Remove internal reasoning from the session after ellama provide an answer.
@@ -2712,6 +2718,8 @@ file by default.
 
 :images FILES -- attach image FILES to the prompt when provider supports it.
 
+:max-tokens INTEGER -- maximum number of tokens to generate.
+
 :on-error ON-ERROR -- ON-ERROR a function that's called with an error message on
 failure (with BUFFER current).
 
@@ -2733,8 +2741,11 @@ failure (with BUFFER current).
                      (or (plist-get args :provider)
                          ellama-provider
                          (ellama-get-first-ollama-chat-model))))
+         (max-tokens (or (plist-get args :max-tokens)
+                         ellama-max-tokens))
          (reasoning-buffer (get-buffer-create
-                            (concat (make-temp-name "*ellama-reasoning-") "*")))
+                            (concat (make-temp-name "*ellama-reasoning-")
+                                    "*")))
          (point (or (plist-get args :point)
                     (with-current-buffer buffer (point))))
          (replace-beg (plist-get args :replace-beg))
@@ -2770,16 +2781,25 @@ failure (with BUFFER current).
                                (llm-chat-prompt-append-response
                                 (ellama-session-prompt session)
                                 prompt-content)
-                               (setf (llm-chat-prompt-tools (ellama-session-prompt session))
-                                     tools)
-                               ;; System message is part of prompt context and should not be
-                               ;; appended on each interaction.
+                               (setf
+                                (llm-chat-prompt-tools
+                                 (ellama-session-prompt session))
+                                tools
+                                (llm-chat-prompt-max-tokens
+                                 (ellama-session-prompt session))
+                                max-tokens)
+                               ;; System message is part of prompt context and
+                               ;; should not be appended on each interaction.
                                (ellama-session-prompt session))
                            (setf (ellama-session-prompt session)
-                                 (llm-make-chat-prompt prompt-content :context system
-                                                       :tools tools)))
-                       (llm-make-chat-prompt prompt-content :context system
-                                             :tools tools))))
+                                 (llm-make-chat-prompt
+                                  prompt-content :context system
+                                  :tools tools
+                                  :max-tokens max-tokens)))
+                       (llm-make-chat-prompt
+                        prompt-content :context system
+                        :tools tools
+                        :max-tokens max-tokens))))
     (when (not (eq (null replace-beg) (null replace-end)))
       (error "Specify both :replace-beg and :replace-end"))
     (with-current-buffer reasoning-buffer
@@ -3182,6 +3202,8 @@ ARGS contains keys for fine control.
 
 :images FILES -- attach image FILES to the prompt when provider supports it.
 
+:max-tokens INTEGER -- maximum number of tokens to generate.
+
 :ephemeral BOOL -- create an ephemeral session if set.
 
 :on-done ON-DONE -- ON-DONE a function that's called with
@@ -3194,6 +3216,7 @@ the full response text when the request completes (with BUFFER current)."
          (variants (mapcar #'car providers))
          (system (plist-get args :system))
          (donecb (plist-get args :on-done))
+         (max-tokens (plist-get args :max-tokens))
          (images (ellama--normalize-image-files
                   (or (plist-get args :images)
                       (plist-get args :image))))
@@ -3294,6 +3317,7 @@ the full response text when the request completes (with BUFFER current)."
            :session session
            :system system
            :images images
+           :max-tokens max-tokens
            :on-done (if donecb
                         (list 'ellama-chat-done donecb)
                       'ellama-chat-done)

@@ -289,8 +289,9 @@ File: ellama.info,  Node: Commands,  Next: Keymap,  Prev: Installation,  Up: Top
    • ‘ellama-select-model’: Change the current provider model
      interactively.  The model transient supports Ollama and
      OpenAI-compatible providers, including URL editing for compatible
-     APIs.  Use "Reset model fields" to clear model, temperature, and
-     context-length overrides and let the provider use its defaults;
+     APIs.  It can also set the maximum number of output tokens.  Use
+     "Reset model fields" to clear model, temperature, context-length,
+     and max-token overrides and let the provider use its defaults;
      reset values are shown as ‘default’ in the transient.
    • ‘ellama-code-complete’: Complete selected code or code in the
      current buffer according to a provided change using Ellama.
@@ -449,6 +450,8 @@ language is english.
 There are many supported providers: ‘ollama’, ‘open ai’, ‘vertex’,
 ‘GPT4All’.  For more information see llm documentation
 (https://elpa.gnu.org/packages/llm.html).
+   • ‘ellama-max-tokens’: Maximum number of tokens to generate.  If not
+     set, use the provider default.
    • ‘ellama-providers’: association list of model llm providers with
      name as key.
    • ‘ellama-spinner-enabled’: Enable spinner during text generation.
@@ -2343,44 +2346,44 @@ Tag Table:
 Node: Top1379
 Node: Installation3893
 Node: Commands8907
-Node: Keymap17466
-Node: Configuration20353
-Node: Session Compaction31766
-Node: Image Input33390
-Node: Task Tool Subagents35535
-Node: DLP for Tool Input/Output37638
-Node: SRT Filesystem Policy for Tools52540
-Node: Context Management58209
-Node: Transient Menus for Context Management59277
-Node: Managing the Context60956
-Node: Considerations61731
-Node: Minor modes62324
-Node: ellama-context-header-line-mode64312
-Node: ellama-context-header-line-global-mode65137
-Node: ellama-context-mode-line-mode65857
-Node: ellama-context-mode-line-global-mode66705
-Node: Ellama Session Header Line Mode67409
-Node: Enabling and Disabling67978
-Node: Customization68425
-Node: Ellama Session Mode Line Mode68713
-Node: Enabling and Disabling (1)69298
-Node: Customization (1)69745
-Node: Using Blueprints70039
-Node: Key Components of Ellama Blueprints70679
-Node: Creating and Managing Blueprints71286
-Node: Blueprints files72264
-Node: Variable Management72685
-Node: Keymap and Mode73138
-Node: Transient Menus74074
-Node: Running Blueprints programmatically74620
-Node: MCP Integration75207
-Node: Agent Skills76442
-Node: Directory Structure76805
-Node: Creating a Skill77832
-Node: How it works78207
-Node: Acknowledgments78598
-Node: Contributions79309
-Node: GNU Free Documentation License79695
+Node: Keymap17536
+Node: Configuration20423
+Node: Session Compaction31950
+Node: Image Input33574
+Node: Task Tool Subagents35719
+Node: DLP for Tool Input/Output37822
+Node: SRT Filesystem Policy for Tools52724
+Node: Context Management58393
+Node: Transient Menus for Context Management59461
+Node: Managing the Context61140
+Node: Considerations61915
+Node: Minor modes62508
+Node: ellama-context-header-line-mode64496
+Node: ellama-context-header-line-global-mode65321
+Node: ellama-context-mode-line-mode66041
+Node: ellama-context-mode-line-global-mode66889
+Node: Ellama Session Header Line Mode67593
+Node: Enabling and Disabling68162
+Node: Customization68609
+Node: Ellama Session Mode Line Mode68897
+Node: Enabling and Disabling (1)69482
+Node: Customization (1)69929
+Node: Using Blueprints70223
+Node: Key Components of Ellama Blueprints70863
+Node: Creating and Managing Blueprints71470
+Node: Blueprints files72448
+Node: Variable Management72869
+Node: Keymap and Mode73322
+Node: Transient Menus74258
+Node: Running Blueprints programmatically74804
+Node: MCP Integration75391
+Node: Agent Skills76626
+Node: Directory Structure76989
+Node: Creating a Skill78016
+Node: How it works78391
+Node: Acknowledgments78782
+Node: Contributions79493
+Node: GNU Free Documentation License79879
 
 End Tag Table
 

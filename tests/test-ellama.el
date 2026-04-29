@@ -831,6 +831,48 @@ detailed comparison to help you decide:
         (when buf
           (kill-buffer buf))))))
 
+(ert-deftest test-ellama-stream-uses-max-tokens ()
+  (let* ((provider (make-llm-fake))
+         (ellama-provider provider)
+         (ellama-max-tokens 7)
+         (ellama-response-process-method 'streaming)
+         (ellama-spinner-enabled nil)
+         (ellama-fill-paragraphs nil)
+         captured-prompt
+         done-text)
+    (cl-letf (((symbol-function 'llm-chat-streaming)
+               (lambda (_provider prompt _partial-callback response-callback
+                                  _error-callback &optional _multi-output)
+                 (setq captured-prompt prompt)
+                 (funcall response-callback '(:text "ok"))
+                 nil)))
+      (with-temp-buffer
+        (ellama-stream "test prompt"
+                       :provider provider
+                       :on-done (lambda (text) (setq done-text text)))))
+    (should (equal done-text "ok"))
+    (should (= (llm-chat-prompt-max-tokens captured-prompt) 7))))
+
+(ert-deftest test-ellama-stream-max-tokens-argument-overrides-default ()
+  (let* ((provider (make-llm-fake))
+         (ellama-provider provider)
+         (ellama-max-tokens 7)
+         (ellama-response-process-method 'streaming)
+         (ellama-spinner-enabled nil)
+         (ellama-fill-paragraphs nil)
+         captured-prompt)
+    (cl-letf (((symbol-function 'llm-chat-streaming)
+               (lambda (_provider prompt _partial-callback response-callback
+                                  _error-callback &optional _multi-output)
+                 (setq captured-prompt prompt)
+                 (funcall response-callback '(:text "ok"))
+                 nil)))
+      (with-temp-buffer
+        (ellama-stream "test prompt"
+                       :provider provider
+                       :max-tokens 2)))
+    (should (= (llm-chat-prompt-max-tokens captured-prompt) 2))))
+
 (ert-deftest test-ellama-stream-defaults-to-current-buffer-with-active-session ()
   (let* ((ellama-provider
           (make-llm-fake
