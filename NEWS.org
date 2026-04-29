@@ -1,3 +1,10 @@
+* Version 1.17.0
+- Add maximum output token support.  Ellama now exposes ~ellama-max-tokens~ and
+  passes per-request ~:max-tokens~ values through ~llm-make-chat-prompt~, so
+  providers can cap generated responses using their standard token limit
+  support.  The model transient menu can set or reset the max-token override,
+  and documentation and tests cover the new behavior.
+
 * Version 1.16.3
 - Sort saved session candidates newest first in ~ellama-load-session~.  Ellama
   now orders session files by modification time and exposes standard completion
