@@ -242,6 +242,10 @@ File: ellama.info,  Node: Commands,  Next: Keymap,  Prev: Installation,  Up: Top
      an interactive buffer and continue conversation.  If called with
      universal argument (‘C-u’) will start new session with llm model
      interactive selection.
+   • ‘ellama-ask-image’: Ask Ellama about one image file by adding it as
+     ephemeral context for the request.  If called with universal
+     argument (‘C-u’) will start new session with llm model interactive
+     selection.
    • ‘ellama-chat-with-image’: Ask Ellama about one image file.  If
      called with universal argument (‘C-u’) will start new session with
      llm model interactive selection.
@@ -410,6 +414,7 @@ Keymap   Function                          Description
 "m f"    ellama-make-format                Make format
 "a a"    ellama-ask-about                  Ask about
 "a i"    ellama-chat                       Chat (ask interactively)
+"a I"    ellama-ask-image                  Ask image
 "a l"    ellama-ask-line                   Ask current line
 "a s"    ellama-ask-selection              Ask selection
 "t t"    ellama-translate                  Text translate
@@ -674,10 +679,14 @@ Ellama can send image files to providers that advertise the
 as multipart media and is supported for PNG, JPEG, WebP and GIF files by
 default.
 
-Use ‘M-x ellama-chat-with-image’ to ask about one image, or ‘M-x
-ellama-chat-with-images’ to attach more than one image.  The main
-transient menu also includes "Chat with image".  Programmatic calls can
-pass image files directly:
+Use ‘M-x ellama-ask-image’ to ask about one image.  This command follows
+the same context-based workflow as ‘ellama-ask-about’: it adds the image
+as ephemeral context, sends the request with ‘ellama-chat’, and shows
+the image link in the chat buffer.  ‘M-x ellama-chat-with-image’ and
+‘M-x ellama-chat-with-images’ use the same context workflow for
+compatibility.  The main transient menu also includes "Chat with image".
+
+Programmatic calls can also pass image files directly:
 
      (ellama-chat "Describe this screenshot." nil
                   :images '("/path/to/screenshot.png"))
@@ -2340,44 +2349,44 @@ Tag Table:
 Node: Top1379
 Node: Installation3893
 Node: Commands8907
-Node: Keymap17229
-Node: Configuration20063
-Node: Session Compaction31476
-Node: Image Input33100
-Node: Task Tool Subagents35288
-Node: DLP for Tool Input/Output37391
-Node: SRT Filesystem Policy for Tools52293
-Node: Context Management57962
-Node: Transient Menus for Context Management59030
-Node: Managing the Context60709
-Node: Considerations61484
-Node: Minor modes62077
-Node: ellama-context-header-line-mode64065
-Node: ellama-context-header-line-global-mode64890
-Node: ellama-context-mode-line-mode65610
-Node: ellama-context-mode-line-global-mode66458
-Node: Ellama Session Header Line Mode67162
-Node: Enabling and Disabling67731
-Node: Customization68178
-Node: Ellama Session Mode Line Mode68466
-Node: Enabling and Disabling (1)69051
-Node: Customization (1)69498
-Node: Using Blueprints69792
-Node: Key Components of Ellama Blueprints70432
-Node: Creating and Managing Blueprints71039
-Node: Blueprints files72017
-Node: Variable Management72438
-Node: Keymap and Mode72891
-Node: Transient Menus73827
-Node: Running Blueprints programmatically74373
-Node: MCP Integration74960
-Node: Agent Skills76195
-Node: Directory Structure76558
-Node: Creating a Skill77585
-Node: How it works77960
-Node: Acknowledgments78351
-Node: Contributions79062
-Node: GNU Free Documentation License79448
+Node: Keymap17466
+Node: Configuration20353
+Node: Session Compaction31766
+Node: Image Input33390
+Node: Task Tool Subagents35838
+Node: DLP for Tool Input/Output37941
+Node: SRT Filesystem Policy for Tools52843
+Node: Context Management58512
+Node: Transient Menus for Context Management59580
+Node: Managing the Context61259
+Node: Considerations62034
+Node: Minor modes62627
+Node: ellama-context-header-line-mode64615
+Node: ellama-context-header-line-global-mode65440
+Node: ellama-context-mode-line-mode66160
+Node: ellama-context-mode-line-global-mode67008
+Node: Ellama Session Header Line Mode67712
+Node: Enabling and Disabling68281
+Node: Customization68728
+Node: Ellama Session Mode Line Mode69016
+Node: Enabling and Disabling (1)69601
+Node: Customization (1)70048
+Node: Using Blueprints70342
+Node: Key Components of Ellama Blueprints70982
+Node: Creating and Managing Blueprints71589
+Node: Blueprints files72567
+Node: Variable Management72988
+Node: Keymap and Mode73441
+Node: Transient Menus74377
+Node: Running Blueprints programmatically74923
+Node: MCP Integration75510
+Node: Agent Skills76745
+Node: Directory Structure77108
+Node: Creating a Skill78135
+Node: How it works78510
+Node: Acknowledgments78901
+Node: Contributions79612
+Node: GNU Free Documentation License79998
 
 End Tag Table
 

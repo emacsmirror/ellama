@@ -813,6 +813,19 @@ For one request only if EPHEMERAL."
       (ellama-context-element-add element))))
 
 ;;;###autoload
+(defun ellama-context-add-image-file (file-name &optional ephemeral)
+  "Add image FILE-NAME to context.
+For one request only if EPHEMERAL."
+  (unless (ellama-image-file-p file-name)
+    (if (string= (downcase (or (file-name-extension file-name) "")) "svg")
+        (user-error "SVG image input is not supported yet")
+      (user-error "Unsupported image file: %s" file-name)))
+  (let ((element (ellama-context-element-image-file :name file-name)))
+    (if ephemeral
+        (ellama-context-ephemeral-element-add element)
+      (ellama-context-element-add element))))
+
+;;;###autoload
 (defun ellama-context-add-image (&optional scope)
   "Add image file to context.
 SCOPE controls lifetime and defaults to
@@ -820,17 +833,12 @@ SCOPE controls lifetime and defaults to
 or `persistent' to keep the image context."
   (interactive)
   (let* ((scope (or scope ellama-image-context-default-scope))
-         (file-name (read-file-name "Select image: " nil nil t))
-         (element (ellama-context-element-image-file :name file-name)))
-    (unless (ellama-image-file-p file-name)
-      (if (string= (downcase (or (file-name-extension file-name) "")) "svg")
-          (user-error "SVG image input is not supported yet")
-        (user-error "Unsupported image file: %s" file-name)))
+         (file-name (read-file-name "Select image: " nil nil t)))
     (pcase scope
       ('persistent
-       (ellama-context-element-add element))
+       (ellama-context-add-image-file file-name))
       (_
-       (ellama-context-ephemeral-element-add element)))))
+       (ellama-context-add-image-file file-name t)))))
 
 ;;;###autoload
 (defun ellama-context-add-file-quote (&optional ephemeral)

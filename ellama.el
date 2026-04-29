@@ -194,7 +194,7 @@ SVG is intentionally out of scope for the initial image input support."
     ;; ask
     (define-key map (kbd "a a") 'ellama-ask-about)
     (define-key map (kbd "a i") 'ellama-chat)
-    (define-key map (kbd "a I") 'ellama-chat-with-image)
+    (define-key map (kbd "a I") 'ellama-ask-image)
     (define-key map (kbd "a l") 'ellama-ask-line)
     (define-key map (kbd "a s") 'ellama-ask-selection)
     ;; text
@@ -3099,17 +3099,33 @@ IMAGES are attached to the final translated request."
                       buffer session translation-buffer images)))))
 
 ;;;###autoload
-(defun ellama-chat-with-image (image prompt &optional create-session)
+(defun ellama-ask-image (image prompt &optional create-session &rest args)
+  "Ask ellama PROMPT about IMAGE using ephemeral context.
+If CREATE-SESSION set, create a new session."
+  (interactive
+   (list (read-file-name "Image: " nil nil t)
+         (read-string "Ask ellama: ")
+         current-prefix-arg))
+  (declare-function ellama-context-add-image-file "ellama-context")
+  (require 'ellama-context)
+  (ellama-context-add-image-file image t)
+  (ellama-chat
+   prompt
+   create-session
+   :ephemeral (plist-get args :ephemeral)))
+
+;;;###autoload
+(defun ellama-chat-with-image (image prompt &optional create-session &rest args)
   "Send PROMPT with IMAGE to ellama chat.
 If CREATE-SESSION set, create a new session."
   (interactive
    (list (read-file-name "Image: " nil nil t)
          (read-string "Ask ellama: ")
          current-prefix-arg))
-  (ellama-chat prompt create-session :images (list image)))
+  (apply #'ellama-ask-image image prompt create-session args))
 
 ;;;###autoload
-(defun ellama-chat-with-images (images prompt &optional create-session)
+(defun ellama-chat-with-images (images prompt &optional create-session &rest args)
   "Send PROMPT with IMAGES to ellama chat.
 If CREATE-SESSION set, create a new session."
   (interactive
@@ -3119,7 +3135,14 @@ If CREATE-SESSION set, create a new session."
      (list (nreverse files)
            (read-string "Ask ellama: ")
            current-prefix-arg)))
-  (ellama-chat prompt create-session :images images))
+  (declare-function ellama-context-add-image-file "ellama-context")
+  (require 'ellama-context)
+  (dolist (image images)
+    (ellama-context-add-image-file image t))
+  (ellama-chat
+   prompt
+   create-session
+   :ephemeral (plist-get args :ephemeral)))
 
 ;;;###autoload
 (defun ellama-chat (prompt &optional create-session &rest args)

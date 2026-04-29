@@ -999,6 +999,32 @@ detailed comparison to help you decide:
          (should (string-match-p "Images read by tools" (car parts)))
          (should (llm-media-p (cadr parts))))))))
 
+(ert-deftest test-ellama-ask-image-adds-ephemeral-context ()
+  (let (context-call chat-call)
+    (cl-letf (((symbol-function 'ellama-context-add-image-file)
+               (lambda (file-name &optional ephemeral)
+                 (setq context-call (list file-name ephemeral))))
+              ((symbol-function 'ellama-chat)
+               (lambda (prompt create-session &rest args)
+                 (setq chat-call (list prompt create-session args)))))
+      (ellama-ask-image "/tmp/image.png" "Describe it" t :ephemeral t))
+    (should (equal context-call '("/tmp/image.png" t)))
+    (should (equal chat-call '("Describe it" t (:ephemeral t))))))
+
+(ert-deftest test-ellama-chat-with-images-adds-ephemeral-context ()
+  (let (context-calls chat-call)
+    (cl-letf (((symbol-function 'ellama-context-add-image-file)
+               (lambda (file-name &optional ephemeral)
+                 (push (list file-name ephemeral) context-calls)))
+              ((symbol-function 'ellama-chat)
+               (lambda (prompt create-session &rest args)
+                 (setq chat-call (list prompt create-session args)))))
+      (ellama-chat-with-images
+       '("/tmp/one.png" "/tmp/two.png") "Compare them" nil :ephemeral t))
+    (should (equal (nreverse context-calls)
+                   '(("/tmp/one.png" t) ("/tmp/two.png" t))))
+    (should (equal chat-call '("Compare them" nil (:ephemeral t))))))
+
 (ert-deftest test-ellama-chat-send-last-message-displays-ephemeral-image-context ()
   (ellama-test--with-temp-image-file
    (lambda (file-name)

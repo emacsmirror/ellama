@@ -339,6 +339,8 @@
         ask-line-call
         ask-selection-call
         ask-about-call
+        ask-image-call
+        chat-image-call
         chat-calls)
     (cl-letf (((symbol-function 'ellama-code-review)
                (lambda (new-session &rest rest)
@@ -352,6 +354,12 @@
               ((symbol-function 'ellama-ask-about)
                (lambda (new-session &rest rest)
                  (setq ask-about-call (list new-session rest))))
+              ((symbol-function 'ellama-ask-image)
+               (lambda (image prompt new-session &rest rest)
+                 (setq ask-image-call (list image prompt new-session rest))))
+              ((symbol-function 'ellama-chat-with-image)
+               (lambda (image prompt new-session &rest rest)
+                 (setq chat-image-call (list image prompt new-session rest))))
               ((symbol-function 'ellama-chat)
                (lambda (prompt new-session &rest rest)
                  (push (list prompt new-session rest) chat-calls)))
@@ -372,10 +380,12 @@
     (should (equal ask-line-call '(t (:ephemeral t))))
     (should (equal ask-selection-call '(t (:ephemeral t))))
     (should (equal ask-about-call '(t (:ephemeral t))))
+    (should (equal ask-image-call
+                   '("/tmp/image.png" "Ask me" t (:ephemeral t))))
+    (should (equal chat-image-call
+                   '("/tmp/image.png" "Ask me" t (:ephemeral t))))
     (should (equal (nreverse chat-calls)
-                   '(("Ask me" t (:ephemeral t :images ("/tmp/image.png")))
-                     ("Ask me" t (:ephemeral t))
-                     ("Ask me" t (:ephemeral t :images ("/tmp/image.png"))))))))
+                   '(("Ask me" t (:ephemeral t)))))))
 
 (ert-deftest test-ellama-transient-add-image-uses-ephemeral-flag ()
   (let (calls)

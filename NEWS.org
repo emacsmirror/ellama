@@ -11,6 +11,9 @@
   bridging, and persistence behavior.
 - Fix chat buffer rendering for ephemeral context, including image context added
   before sending a manually typed chat message.
+- Change image ask commands to use ephemeral image context, matching
+  ~ellama-ask-about~ and keeping the chat transcript aligned with request
+  context.
 
 * Version 1.15.0
 - Add task prompt templates for subagents.  The task tool can now render

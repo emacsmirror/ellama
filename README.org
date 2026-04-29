@@ -129,6 +129,9 @@ More sophisticated configuration example:
 - ~ellama-chat~: Ask Ellama about something by entering a prompt in an
   interactive buffer and continue conversation. If called with universal
   argument (~C-u~) will start new session with llm model interactive selection.
+- ~ellama-ask-image~: Ask Ellama about one image file by adding it as ephemeral
+  context for the request. If called with universal argument (~C-u~) will start
+  new session with llm model interactive selection.
 - ~ellama-chat-with-image~: Ask Ellama about one image file. If called with
   universal argument (~C-u~) will start new session with llm model interactive
   selection.
@@ -279,6 +282,7 @@ the ~ellama-keymap-prefix~ prefix (not set by default):
 | "m f"  | ellama-make-format              | Make format                  |
 | "a a"  | ellama-ask-about                | Ask about                    |
 | "a i"  | ellama-chat                     | Chat (ask interactively)     |
+| "a I"  | ellama-ask-image                | Ask image                    |
 | "a l"  | ellama-ask-line                 | Ask current line             |
 | "a s"  | ellama-ask-selection            | Ask selection                |
 | "t t"  | ellama-translate                | Text translate               |
@@ -501,10 +505,14 @@ Ellama can send image files to providers that advertise the ~image-input~
 capability through the ~llm~ library. Image data is sent as multipart media and
 is supported for PNG, JPEG, WebP and GIF files by default.
 
-Use ~M-x ellama-chat-with-image~ to ask about one image, or ~M-x
-ellama-chat-with-images~ to attach more than one image. The main transient menu
-also includes "Chat with image". Programmatic calls can pass image files
-directly:
+Use ~M-x ellama-ask-image~ to ask about one image. This command follows the same
+context-based workflow as ~ellama-ask-about~: it adds the image as ephemeral
+context, sends the request with ~ellama-chat~, and shows the image link in the
+chat buffer. ~M-x ellama-chat-with-image~ and ~M-x ellama-chat-with-images~ use
+the same context workflow for compatibility. The main transient menu also
+includes "Chat with image".
+
+Programmatic calls can also pass image files directly:
 
 #+BEGIN_SRC emacs-lisp
   (ellama-chat "Describe this screenshot." nil
