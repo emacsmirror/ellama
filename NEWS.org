@@ -1,3 +1,8 @@
+* Version 1.16.2
+- Fix GNU ELPA tarball manual generation from ~README.org~. Add Org export
+  metadata so ELPA writes ~ellama.texi~ with a valid title, and keep the local
+  manual exporter from inheriting those README-only export keywords.
+
 * Version 1.16.1
 - Remove false statement from documentation.
 * Version 1.16.0

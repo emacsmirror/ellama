@@ -85,6 +85,28 @@
     (should-not (string-match-p (regexp-quote "badge.svg") export-content))
     (should (string-match-p (regexp-quote "Visible text") export-content))))
 
+(ert-deftest test-ellama-manual-export-removes-readme-export-keywords ()
+  (let (export-content)
+    (ellama-test--with-manual-project
+     ";; Version: 1.0.0\n"
+     (concat "#+TITLE: README title\n"
+             "#+EXPORT_FILE_NAME: readme-export\n"
+             "Visible text")
+     (lambda (root)
+       (cl-letf (((symbol-function 'project-current)
+                  (lambda (&rest _) :project))
+                 ((symbol-function 'project-root)
+                  (lambda (_project) root))
+                 ((symbol-function 'org-export-to-file)
+                  (lambda (&rest _args)
+                    (setq export-content (buffer-string)))))
+         (ellama-manual-export))))
+    (should-not (string-match-p (regexp-quote "README title")
+                                export-content))
+    (should-not (string-match-p (regexp-quote "readme-export")
+                                export-content))
+    (should (string-match-p (regexp-quote "Visible text") export-content))))
+
 (ert-deftest test-ellama-manual-export-removes-gif-image-links ()
   (let (export-content)
     (ellama-test--with-manual-project
