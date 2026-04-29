@@ -548,11 +548,6 @@ Tool calls can request image handling explicitly:
 }
 #+END_SRC
 
-Ellama does not store raw image bytes in saved session files. Multipart image
-parts are rendered as placeholders for session persistence and compaction, so
-reloading an old session will not resend previous image bytes. Attach the image
-again when continuing a saved conversation that still needs it.
-
 ** Task Tool Subagents
 
 The ~task~ tool delegates work to an asynchronous sub-agent. The parent model
