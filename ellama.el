@@ -1937,6 +1937,26 @@ REQUEST-CONTEXT is a request context."
       (with-temp-file session-file-name
         (insert (prin1-to-string (ellama--session-for-save session)))))))
 
+(defun ellama--session-file-candidates (dir)
+  "Return session file candidates in DIR, newest first."
+  (mapcar
+   #'file-name-nondirectory
+   (sort
+    (directory-files dir t "^[^\\.].*" t)
+    (lambda (a b)
+      (time-less-p
+       (file-attribute-modification-time (file-attributes b))
+       (file-attribute-modification-time (file-attributes a)))))))
+
+(defun ellama--presorted-completion-table (candidates)
+  "Return completion table for presorted CANDIDATES."
+  (lambda (string pred action)
+    (if (eq action 'metadata)
+        '(metadata
+          (display-sort-function . identity)
+          (cycle-sort-function . identity))
+      (complete-with-action action candidates string pred))))
+
 ;;;###autoload
 (defun ellama-load-session ()
   "Load ellama session from file."
@@ -1950,7 +1970,8 @@ REQUEST-CONTEXT is a request context."
                           dir
                           (completing-read
                            "Select session to load: "
-                           (directory-files dir nil "^[^\.].*"))))
+                           (ellama--presorted-completion-table
+                            (ellama--session-file-candidates dir)))))
               (session-file-name (ellama--get-session-file-name file-name))
               ((file-exists-p session-file-name))
               (buffer (find-file-noselect file-name)))
