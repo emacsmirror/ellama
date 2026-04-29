@@ -1,3 +1,8 @@
+* Version 1.16.3
+- Sort saved session candidates newest first in ~ellama-load-session~.  Ellama
+  now orders session files by modification time and exposes standard completion
+  metadata so completion UIs can preserve that order.
+
 * Version 1.16.2
 - Fix GNU ELPA tarball manual generation from ~README.org~. Add Org export
   metadata so ELPA writes ~ellama.texi~ with a valid title, and keep the local
