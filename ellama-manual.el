@@ -32,6 +32,17 @@
 
 (defvar org-export-with-broken-links)
 
+(defun ellama-manual--readme-content (file)
+  "Return FILE content without conflicting export keywords."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (while (re-search-forward
+            "^#\\+\\(?:TITLE\\|EXPORT_FILE_NAME\\):.*\n?"
+            nil t)
+      (replace-match ""))
+    (buffer-string)))
+
 ;;;###autoload
 (defun ellama-manual-export ()
   "Create info manual from readme."
@@ -54,8 +65,7 @@
                (file-name-concat
                 (project-root (project-current))
                 "README.org")))
-         (content (with-current-buffer buf
-                    (buffer-string))))
+         (content (ellama-manual--readme-content (buffer-file-name buf))))
     (with-temp-buffer
       (org-mode)
       (insert
