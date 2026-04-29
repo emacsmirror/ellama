@@ -1686,10 +1686,14 @@ Wrap command with `srt' when `ellama-tools-use-srt' is non-nil."
     (ellama--session-add-pending-tool-media
      (or ellama--current-session ellama-tools--current-session)
      file-name)
-    (format "Image file queued for model input: %s (%s, %d bytes)."
-            (expand-file-name file-name)
-            (ellama--image-mime-type file-name)
-            (ellama--file-size file-name)))))
+    (let* ((expanded (expand-file-name file-name))
+           (link (if (provided-mode-derived-p major-mode 'org-mode)
+                     (format "[[file:%s][%s]]" expanded file-name)
+                   (format "[%s](file://%s)" file-name expanded))))
+      (format "Image file queued for model input: %s (%s, %d bytes)."
+              link
+              (ellama--image-mime-type file-name)
+              (ellama--file-size file-name))))))
 
 (defun ellama-tools-read-file-tool (file-name &optional mode)
   "Read the file FILE-NAME.
