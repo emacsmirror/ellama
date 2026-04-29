@@ -1,3 +1,5 @@
+* Version 1.16.1
+- Remove false statement from documentation.
 * Version 1.16.0
 - Add image input support for prompts and context.  Ellama can now attach image
   files to chat requests, queue image context ephemerally, and build multipart
@@ -14,7 +16,6 @@
 - Change image ask commands to use ephemeral image context, matching
   ~ellama-ask-about~ and keeping the chat transcript aligned with request
   context.
-
 * Version 1.15.0
 - Add task prompt templates for subagents.  The task tool can now render
   relative template paths with object-based argument substitution, strict path
