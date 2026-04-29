@@ -51,6 +51,7 @@
 (defvar ellama-transient-url nil)
 (defvar ellama-transient-provider nil)
 (defvar ellama--current-session-uid)
+(defvar ellama-max-tokens)
 
 (declare-function ellama-ask-image "ellama"
                   (image prompt &optional create-session &rest args))
@@ -100,6 +101,22 @@ Otherwise, prompt the user to enter a system message."
   (interactive)
   (setq ellama-transient-context-length (read-number "Enter context length: ")))
 
+(transient-define-suffix ellama-transient-set-max-tokens ()
+  "Set maximum output tokens."
+  (interactive)
+  (let* ((input (read-string
+                 "Enter max tokens (empty for default): "
+                 (when ellama-max-tokens
+                   (number-to-string ellama-max-tokens))))
+         (value (unless (string-empty-p input)
+                  (unless (string-match-p "\\`[[:digit:]]+\\'" input)
+                    (error "Max tokens must be a positive integer"))
+                  (let ((number (string-to-number input)))
+                    (unless (> number 0)
+                      (error "Max tokens must be a positive integer"))
+                    number))))
+    (setq ellama-max-tokens value)))
+
 (transient-define-suffix ellama-transient-set-host ()
   "Set host address."
   (interactive)
@@ -120,7 +137,8 @@ Otherwise, prompt the user to enter a system message."
   (interactive)
   (setq ellama-transient-model-name nil
         ellama-transient-temperature nil
-        ellama-transient-context-length nil))
+        ellama-transient-context-length nil
+        ellama-max-tokens nil))
 
 (defvar ellama-provider-list '(ellama-provider
                                ellama-coding-provider
@@ -183,6 +201,9 @@ Otherwise, prompt the user to enter a system message."
                      ellama-transient-provider))
      :transient t
      :description ellama-transient-context-length-description)
+    ("x" "Set Max Tokens" ellama-transient-set-max-tokens
+     :transient t
+     :description ellama-transient-max-tokens-description)
     ("r" "Reset model fields" ellama-transient-reset-model-fields
      :transient t)
     ("S" "Set provider" ellama-transient-set-provider
@@ -242,6 +263,11 @@ FORMAT is used for non-default VALUE."
   "Return transient context length description."
   (ellama-transient--field-description
    "Context Length" ellama-transient-context-length "%d"))
+
+(defun ellama-transient-max-tokens-description ()
+  "Return transient max tokens description."
+  (ellama-transient--field-description
+   "Max Tokens" ellama-max-tokens "%d"))
 
 (defun ellama-transient--ollama-provider-p (provider)
   "Return non-nil when PROVIDER is an Ollama provider."
